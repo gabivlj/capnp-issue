@@ -41,22 +41,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let res = request.send();
             let bs_get = res.promise.await.expect("i dont care about failures");
             let bsr = bs_get.get().unwrap().get_bsr().unwrap();
+
+            // Start some inflight promise that we will await later,
+            // unrelated to the connect call
             let inflighter_too = bsr.inflighter_request().send().promise;
+            // Start the pipeline
             let promise = bsr.get_connector_request().send().pipeline;
+            // Get connector
             let connector = promise.get_conn().connect_request();
-
-            println!("Get connect request");
+            // Send the connector and get the pipeline
             let bs = connector.send().pipeline;
+            // Get up bytestream
             let up = bs.get_up();
-
+            // Get the write request
             let mut res = up.write_request();
+            // Set the bytes
             let mut res_req = res.get();
             res_req.set_bytes("hello world".as_bytes());
+            // Send everything now
             let _ = res.send().await.unwrap();
-
+            // Wait for inflighter
             println!("Whole thing finished");
             inflighter_too.await.unwrap();
-            drop(bs);
+            // Bye
             Ok::<(), ()>(())
         })
         .await;

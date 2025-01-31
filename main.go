@@ -99,7 +99,7 @@ func (s *service) Get(ctx context.Context, getParams bytestream.Service_get) (re
 
 	bServer := bytestream.ByteStreamReturner_NewServer(&byteStreamGetter{})
 	bServer.HandleUnknownMethod = func(m capnp.Method) *server.Method {
-		fmt.Println("Unknown method on Get, noooo!!!!!!!!!!")
+		panic("This is not hit ever, it will be hit below")
 		return nil
 	}
 
@@ -114,7 +114,11 @@ type byteStreamGetter struct{}
 func (c *byteStreamGetter) Inflighter(ctx context.Context, getParams bytestream.ByteStreamReturner_inflighter) error {
 	getParams.Go()
 	fmt.Println("Inflighter BS start")
-	<-ctx.Done()
+	select {
+	case <-ctx.Done():
+		// 3s is enough for repro
+	case <-time.After(time.Second * 3):
+	}
 	fmt.Println("Inflighter BS done")
 	return nil
 }
@@ -133,11 +137,27 @@ func (c *byteStreamGetter) GetConnector(ctx context.Context, getParams bytestrea
 
 	bServer := bytestream.Connector_NewServer(&conn{})
 	bServer.HandleUnknownMethod = func(m capnp.Method) *server.Method {
-		fmt.Println("Unknown method, noooo!!!!!!!!!!")
+		fmt.Println("Unknown method:", m.String())
+		// So here, if you for example pass the bytestream
+		// we return in Connect and do something like this:
+
+		/*
+			    b := <-p.c
+				fmt.Println("Got bytestream, returning impl")
+				methods := bytestream.ByteStream_Methods([]server.Method{}, b)
+				s := &server.Method{methods[m.MethodID].Method, methods[m.MethodID].Impl}
+				p.c <- b
+		*/
+
+		// It will work!
+		//
+		// IDK why capnp-go here doesn't really understand what's going on
 		return nil
 	}
 
-	time.Sleep(time.Second)
+	// The more you sleep, the easier to repro it is. Not even sleeping
+	// and you will repro this.
+	time.Sleep(time.Millisecond)
 	client := capnp.NewClient(bServer)
 	b := bytestream.Connector(client)
 	return res.SetConn(b)
