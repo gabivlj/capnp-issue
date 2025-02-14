@@ -99,12 +99,13 @@ func (s *service) Get(ctx context.Context, getParams bytestream.Service_get) (re
 
 	bServer := bytestream.ByteStreamReturner_NewServer(&byteStreamGetter{})
 	bServer.HandleUnknownMethod = func(m capnp.Method) *server.Method {
-		panic("This is not hit ever, it will be hit below")
+		fmt.Println("Handle unknown method too rip")
 		return nil
 	}
 
 	client := capnp.NewClient(bServer)
 	b := bytestream.ByteStreamReturner(client)
+	time.Sleep(time.Second * 3)
 
 	return res.SetBsr(b)
 }

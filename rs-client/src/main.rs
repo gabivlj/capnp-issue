@@ -39,8 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let request = service.get_request();
             let res = request.send();
-            let bs_get = res.promise.await.expect("i dont care about failures");
-            let bsr = bs_get.get().unwrap().get_bsr().unwrap();
+            let bs_get = res.pipeline;
+            let bsr = bs_get.get_bsr();
 
             // If you want, start some inflight promise that we will await later,
             // unrelated to the connect call
