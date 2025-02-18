@@ -14,5 +14,5 @@ $(BINDIR)/capnpc-go bin/capnpc-go:
 
 build: bin/capnpc-go
 	cd $(CAPNP_FOLDER) && PATH="$$PATH":$(BINDIR) $(CAPNP) compile -I $(GO_CAPNP_DIR)/std/ -I ./ \
-	 $(shell find $(CAPNP_FOLDER) -name '*.capnp' | sort -r | while read line; do echo -n " -ogo "; echo -n "$$line"; done)
+	 $(shell find $(CAPNP_FOLDER) -name '*.capnp' | sort -r | while read line; do printf " -ogo "; printf "$$line"; done)
 	$(GO) build -o $(BINDIR)/repro .
