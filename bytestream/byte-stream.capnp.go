@@ -8,7 +8,6 @@ import (
 	fc "capnproto.org/go/capnp/v3/flowcontrol"
 	schemas "capnproto.org/go/capnp/v3/schemas"
 	server "capnproto.org/go/capnp/v3/server"
-	stream "capnproto.org/go/capnp/v3/std/capnp/stream"
 	context "context"
 )
 
@@ -1151,7 +1150,8 @@ type ByteStream capnp.Client
 // ByteStream_TypeID is the unique identifier for the type ByteStream.
 const ByteStream_TypeID = 0xb45bc9c79a817b99
 
-func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Params) error) error {
+func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Params) error) (ByteStream_write_Results_Future, capnp.ReleaseFunc) {
+
 	s := capnp.Send{
 		Method: capnp.Method{
 			InterfaceID:   0xb45bc9c79a817b99,
@@ -1165,7 +1165,8 @@ func (c ByteStream) Write(ctx context.Context, params func(ByteStream_write_Para
 		s.PlaceArgs = func(s capnp.Struct) error { return params(ByteStream_write_Params(s)) }
 	}
 
-	return capnp.Client(c).SendStreamCall(ctx, s)
+	ans, release := capnp.Client(c).SendCall(ctx, s)
+	return ByteStream_write_Results_Future{Future: ans.Future()}, release
 
 }
 
@@ -1291,9 +1292,9 @@ func (c ByteStream_write) Args() ByteStream_write_Params {
 }
 
 // AllocResults allocates the results struct.
-func (c ByteStream_write) AllocResults() (stream.StreamResult, error) {
+func (c ByteStream_write) AllocResults() (ByteStream_write_Results, error) {
 	r, err := c.Call.AllocResults(capnp.ObjectSize{DataSize: 0, PointerCount: 0})
-	return stream.StreamResult(r), err
+	return ByteStream_write_Results(r), err
 }
 
 // ByteStream_List is a list of ByteStream.
@@ -1382,52 +1383,118 @@ func (f ByteStream_write_Params_Future) Struct() (ByteStream_write_Params, error
 	return ByteStream_write_Params(p.Struct()), err
 }
 
-const schema_8f5d14e1c273738e = "x\xda\x9c\x94OH\x14o\x18\xc7\x9fg\xdew\x1d\xf9" +
-	"\xc1\xfe\xf6\xf7\xfeF\x0fI\xa6\x89\x11-\xb8\xe4\x9aP" +
-	"]V,\xf1$\xec\xae^\xdc\x90X\xd77\xdbpg" +
-	"df6\x13\x0fad\x19\x85E\xe1A\x09\xa2C`" +
-	"\x08a`\x1d\x84(\xf5P\x09]\x84\xc0\x0eQfA" +
-	"v\x08\"\xbcD0\xf1\xce63\xbb\xeb\x1f\xa2\xdb\x1c" +
-	"\x9e\xef\xf7\xf9\xbe\x9f\xe7y\xe6\xe0\x0bl\xa2\xf5\xfe\x88" +
-	"\x0cR\xac\xc3WbMwT\xdf\xbb\xf9\xfe\xea\x05`" +
-	"\xfb\x10\x80\xca\x00\x0d#d\x0e\x81ZK\x93{\xb5C" +
-	"\x8ffF\x81\xfdO\xac1\xc3XX-\xeb\xba\x0e\x80" +
-	"\x0dY\x12De\x84\xc8\x00\xca0\xb9\xac\xbc\x11_\xd6" +
-	"\xb9\xa9\xc6\xb5\x07_\xc3\xd39\x1f\x1f\x0a\xa3y\xb2\x8c" +
-	"\x80\xcak\x12\x01\xb4\xf4\xf6\xc3\xa3\x89\xb5\xe8L^\xa3" +
-	"\x0d\xb2$\x1aM\x0c\x0dO>\x7fyb\xb6\xb8\x91\xb2" +
-	"N\xbe(\x1bv\x9fo\xa4U\xd9%4\xd6\xd0\xd8\xbf" +
-	"\x1d\xba\xf5q\x16X\x85c\x834(l\x9ehm\xf3" +
-	"k\xef.\xce\x01\xdb\xed&X'\x09\x91`\xc3Np" +
-	"\xfc\xeeh\xcf\"\xeb|\x9a\x97\xa0\x9c.\x08\xe9x\x8b" +
-	"v\xad\xfa\xc7\x9e\xa5\x9ciN\xea\xa3a!\xf5S!" +
-	"\xfd\xf9X\x9f2\xd6\xef\xbf\xda\x14\xb1\x8e.+G\x84" +
-	"\x95\xd2H[\x95.;b\xdd\x9dO\x89\xd5\x1b\xe9\x95" +
-	"M\xc5-\xf4\x83\x12\xb3\x8b\xdbh\xab\x92\xb5\x8b\xff\xbb" +
-	"\xb5\xffvp\x91\xbc\xcdO\xddE\xbbE\xeb\xb4\xdd\xba" +
-	"s\xe5s\"i^\xfa\x0e\xac\xd2-\xb8B\xe3\xa2`" +
-	"\x9cF\xa0\xd3\xea\x1e4y\x9da\xea>\x9e\xcc\x84R" +
-	"\xc9~\xb5\xffh\xf3\xa0\xc9\xdbM\x9d'3qnf" +
-	"u\x95\xeb\xa1\xb4z\xaa/\xdd{\xda\xe4zm$\x9a" +
-	"\xd4\x93\x19\xc3\x15\x92\xed\x84\x01\xa1\x8c\"\xc6J\x89\x0f" +
-	"\xc0\x9d :\xb3f\xf5g@b\x07dDw\x8d\xd0" +
-	"\x81\xcc*\x13 \xb1r\xd9\xea\xe5\xe61MU9\x04" +
-	"R\xa6\xa67\xa1\xe5$\x01\xc2\xf5&\x8c\"\xbaAJ" +
-	"v|\x81c$lj\xe3\xdc\xc8\xf6\x99h\xc4(\xa1" +
-	"\x00\x14\x01\x98?\x08\x10+%\x18+\x930\x90\xd2T" +
-	"\x15\x997\x0a@d\xf0W\x9dr\xb0\x00\\\xadT\xac" +
-	"\x0d\x08\xb1\xc0DmL\xce\xc0P}\xf8l\xa0a\xf2" +
-	"\xe4\x04ca\x90\x98O\xae\x1a\xd0\xd3&/|r\x1e" +
-	"\xfbv\xae\x9fM\xa7\xb8\xe8^\x1bM\x06\x0aFD\xbd" +
-	"27Y(\x95\xfb\xb2\x13\x92\xcc\xb6(z\xb4\x01\x81" +
-	"\xc2\xbd\xb2\"\x14\xff\xfc\xe9\xda\xe4\x90\x1b\xe0\x08\xb7N" +
-	"\x1e\xe7UvY~\x9a\x1a/\x8d\xdcm\xe8\xc8\xbc\x7f" +
-	"KQ\x18\xa9\xd8\x14\xb9\x07\xd69}t\xce\x95\xb1\x1a" +
-	"\x1b\xac\xdc\xcb\xcdB\xacR1/\xd9\xd4t\xcf\xc9\xf9" +
-	"U\xa0s}\x8c5\xdbN\xe7\x7f3-t\xdb\x91\xbe" +
-	"\xc0\"\x17=\xb8\xc2{0\xc9\xf6\xef\x00\x9fn\x05?" +
-	"d\xefIn\xf1\x0a7<\xec\xf9V\x09\x0b\x03\xfd " +
-	"\xa1\x1f\xf0W\x00\x00\x00\xff\xff\xcc\xea\xca`"
+type ByteStream_write_Results capnp.Struct
+
+// ByteStream_write_Results_TypeID is the unique identifier for the type ByteStream_write_Results.
+const ByteStream_write_Results_TypeID = 0xbb0363e0ee429226
+
+func NewByteStream_write_Results(s *capnp.Segment) (ByteStream_write_Results, error) {
+	st, err := capnp.NewStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ByteStream_write_Results(st), err
+}
+
+func NewRootByteStream_write_Results(s *capnp.Segment) (ByteStream_write_Results, error) {
+	st, err := capnp.NewRootStruct(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0})
+	return ByteStream_write_Results(st), err
+}
+
+func ReadRootByteStream_write_Results(msg *capnp.Message) (ByteStream_write_Results, error) {
+	root, err := msg.Root()
+	return ByteStream_write_Results(root.Struct()), err
+}
+
+func (s ByteStream_write_Results) String() string {
+	str, _ := text.Marshal(0xbb0363e0ee429226, capnp.Struct(s))
+	return str
+}
+
+func (s ByteStream_write_Results) EncodeAsPtr(seg *capnp.Segment) capnp.Ptr {
+	return capnp.Struct(s).EncodeAsPtr(seg)
+}
+
+func (ByteStream_write_Results) DecodeFromPtr(p capnp.Ptr) ByteStream_write_Results {
+	return ByteStream_write_Results(capnp.Struct{}.DecodeFromPtr(p))
+}
+
+func (s ByteStream_write_Results) ToPtr() capnp.Ptr {
+	return capnp.Struct(s).ToPtr()
+}
+func (s ByteStream_write_Results) IsValid() bool {
+	return capnp.Struct(s).IsValid()
+}
+
+func (s ByteStream_write_Results) Message() *capnp.Message {
+	return capnp.Struct(s).Message()
+}
+
+func (s ByteStream_write_Results) Segment() *capnp.Segment {
+	return capnp.Struct(s).Segment()
+}
+
+// ByteStream_write_Results_List is a list of ByteStream_write_Results.
+type ByteStream_write_Results_List = capnp.StructList[ByteStream_write_Results]
+
+// NewByteStream_write_Results creates a new list of ByteStream_write_Results.
+func NewByteStream_write_Results_List(s *capnp.Segment, sz int32) (ByteStream_write_Results_List, error) {
+	l, err := capnp.NewCompositeList(s, capnp.ObjectSize{DataSize: 0, PointerCount: 0}, sz)
+	return capnp.StructList[ByteStream_write_Results](l), err
+}
+
+// ByteStream_write_Results_Future is a wrapper for a ByteStream_write_Results promised by a client call.
+type ByteStream_write_Results_Future struct{ *capnp.Future }
+
+func (f ByteStream_write_Results_Future) Struct() (ByteStream_write_Results, error) {
+	p, err := f.Future.Ptr()
+	return ByteStream_write_Results(p.Struct()), err
+}
+
+const schema_8f5d14e1c273738e = "x\xda\x9cT_H\x14k\x14?g\xbeYG.\xec" +
+	"\xdd\xfb\xdd\xf1\xbe\xc8\xf5\xea\x15\xef\xbd\xdc\x05\x97\\\x8b" +
+	"\"\x08\xc5\x0a{\x09vW{p\xa3\x87u\xfd\xb2\x0d" +
+	"wGgf3\x11\x89\"J(\xac\x0c\x1f\x92\"|" +
+	"\x08\x0c1|\xd0 #\"E\"\xa1\x87|\xf2E\xd2" +
+	",\xa8\x1e\x04\xe9-\x92\x89\xef\x9bffw\xfdC\xf8" +
+	"60\xe7\xfc~\xbf\xf3\xfb\x9d\xf3\xed\x19\xc7z\xb9\xc6" +
+	"\xbf\xbf\x08\xa4\xe81_\x915\xd6\\\xf1`p\xf9\xda" +
+	"%\xa0\xff \x80\xac\x00\xd4\"\x99F\x90\xad\xf9\xe1\xbf" +
+	"\xb5\xbdS\x13\xfd@\x7f'\xd6\x80a\xcc\xac\x94\x9c\xba" +
+	"\x01\x80\xb5\xebR\x10U$\x0a\x80\xba!]UO\xf0" +
+	"/\xeb\xfc\xe8\xbe\xd5Gk\xe11\x1b\xc7\x87\x1c\xe8\x10" +
+	"Y@@5J\xea\x00-\xbd\xe9@\x7f|52\x91" +
+	"C\xd4E\xe69\xd1\x9d\xde\x8b\xc3/_\x9d\x9c,$" +
+	"R\x19\xf9\xacv\x09\x9e4iT\x87\x04O\xef\xc0\xaf" +
+	"\xcd\xba\xf5~\x12h\xa9\x03\xd3G\x82\x1c\xe6\x99v\xfc" +
+	"\xc5\xea\xdb\xcb\xd3@\xfft\x150\x12\xe7\x0a\xba\x84\x82" +
+	"\x7f\x07\x1b\xd6\x96\x93\xe4)\xd02\xa7\xf5\x16\xff/[" +
+	"GF\xfa\xdbfi\xcb\xf3\x1cm}d\x86\xff\x19:" +
+	"\xaa]\xaf\xf8\xfa\xd7\xbcMg\x83\xa6I\x98\x83f\x05" +
+	"\xe8\xb7\xc7\xfa\xa8\xf1\xe9\xe1\xebM\xe2\x87\xc8\x82:\"" +
+	"\xc4\xdf#\x8d\xea\x9c\x10_}\xffC|\xe5fjq" +
+	"S\xf18y\xa7>\x11\xc5S\xa4Q]\x12\xc5\xbf\xdd" +
+	"\xfe\xefnp\x96,\xe5\xce3GZ9\xf5\x1bA\xdd" +
+	"\xb2\xf81\x9e0\xaf|\xb1\xe7\xb1\x0b\xd6I\x8c\x17l" +
+	"\x90:\xa8\xb6Z{LVm\x98\xba\x8f%\xd2\xa1d" +
+	"\xa23\xd3y\xb0\xa1\xc7dM\xa6\xce\x12\xe9\x183\xb3" +
+	"z\x86\xe9\xa1T\xe6tG\xaa\xfd\x8c\xc9\xf4\xaa\xbaH" +
+	"BO\xa4\x0d\xb7\x91l\xd7\x18\xe0\x9d\x11\xc4h1\xf1" +
+	"\x01\xb8\xd9\xa2\xb3\x05\xb4\xe6,H\xf4\x7f\x05\xd1]0" +
+	"tL\xa6eq\x90\xe8\x1f\x8a\xd5\xce\xcc\xc3Z&\xc3" +
+	" \x9045\xbd\x1e-G\x09\x10\xa6\xd7c\x04\xd1\x15" +
+	"R\xb4\xe3\x04\x0e\x10\x87\xa9\x8a1#\xdba\xa2\x11\x95" +
+	"\x89\x0c #\x00\xf5\x07\x01\xa2\xc5\x04\xa3%\x12\x06\x92" +
+	"Z&\x83\xd4\x8b\x02\x10)\xec\x8a\xc96\x0b\xc0\xed\x95" +
+	"\x0a{\x03\xbc\x99\xdb$\x0b\x9b\x9c\xc0\xd0\xd9DJ\xc3" +
+	" Q\x9fR\xde\xad\xa7L\x96?r\x8e\xf7ML?" +
+	"\x97J2\xce^\x15I\x04\xf2\"\x92\xbd2WY(" +
+	"i\x7f\x09\x85$\xbd\xad\x15mZ7\xb7\xc2\xbd\xbf\x02" +
+	"+\xe4\xad\xac\x08\x09\xa9\xb6\xcb\xc4\xf4t\xfc\xf2\xb3;" +
+	"f\xe7c\x80\xd3\xb8\xf5\x981V.\xcar\xa5Wz" +
+	"\xd2\x95VCG\xea=Q\x05\xca\xa5BPd^\x0a" +
+	"\xce\x0b\x82\xcemSZ)RP\xda\x99\x99\x9f\x81T" +
+	"h\xaebj\xba\x87\xe4\xbc8\xe8\x9c*\xa5\x0d\x02\xe9" +
+	"\xc2\x8f\x00\xf2\xd1v\x8c\x8a\xdb\xa2\x14\x0c\\\xea\x0dL" +
+	"\xb2\x9d\xbbLJli\xfe9\x84=\xdcr\x0ea\xa0" +
+	"\x1f$\xf4\x03~\x0f\x00\x00\xff\xff0\x9f\xe3\xbf"
 
 func RegisterSchema(reg *schemas.Registry) {
 	reg.Register(&schemas.Schema{
@@ -1440,6 +1507,7 @@ func RegisterSchema(reg *schemas.Registry) {
 			0xb45bc9c79a817b99,
 			0xb4e4ff72540e8e7b,
 			0xba84dfe3c14d6fbd,
+			0xbb0363e0ee429226,
 			0xbf5911c36488a144,
 			0xca1efa208c6f4595,
 			0xcda9e973a872b6fc,

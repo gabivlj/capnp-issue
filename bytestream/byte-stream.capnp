@@ -14,7 +14,7 @@ interface Connector {
 }
 
 interface ByteStream {
-  write @0 (bytes :Data) -> stream;
+  write @0 (bytes :Data);
 }
 
 using Go = import "/go.capnp";
